@@ -801,7 +801,7 @@ const CommunityContent = () => {
                                             <CommentUserIcon />
                                             <div>
                                                 <CommentUserName $isAuthor={comment.is_author}>
-                                                    {comment.is_author ? "글쓴이(익명1)" : `익명${comment.anonymous_number}`}
+                                                    {comment.is_author ? `글쓴이(익명${comment.anonymous_number})` : `익명${comment.anonymous_number}`}
                                                 </CommentUserName>
                                                 <CommentTime>{formatDate(comment.create_date)}</CommentTime>
                                             </div>
@@ -850,7 +850,7 @@ const CommunityContent = () => {
                                                     <CommentUserIcon />
                                                     <div>
                                                         <CommentUserName $isAuthor={reply.is_author}>
-                                                            {reply.is_author ? "익명(글쓴이)" : `익명${reply.anonymous_number - 1}`}
+                                                            {reply.is_author ? `글쓴이(익명${reply.anonymous_number})` : `익명${reply.anonymous_number}`}
                                                         </CommentUserName>
                                                         <CommentTime>{formatDate(reply.create_date)}</CommentTime>
                                                     </div>
