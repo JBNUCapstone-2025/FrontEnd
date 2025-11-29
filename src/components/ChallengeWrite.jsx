@@ -4,6 +4,7 @@ import colors from "../styles/colors";
 import { FaAngleLeft } from "react-icons/fa";
 import { useNavigate, useLocation } from "react-router-dom";
 import { completeChallenge } from "../api/challengeApi";
+import ValidationModal from "./ValidationModal";
 
 const Wrapper = styled.div`
   display: flex;
@@ -191,6 +192,9 @@ const ChallengeWrite = () => {
   const [content, setContent] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [validating, setValidating] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [showFailureModal, setShowFailureModal] = useState(false);
+  const [failureMessage, setFailureMessage] = useState("");
 
   const handleSubmit = async () => {
     if (!content.trim()) {
@@ -204,11 +208,11 @@ const ChallengeWrite = () => {
       // 1단계: GPT API로 챌린지 완료 여부 검증
       const validationUrl = "/validate";
 
-      console.log('🚀 Sending validation request to!:', validationUrl);
-      console.log('📝 Request payload:', {
-        question: challenge.challenge_text,
-        answer: content,
-      });
+      // console.log('🚀 Sending validation request to!:', validationUrl);
+      // console.log('📝 Request payload:', {
+      //   question: challenge.challenge_text,
+      //   answer: content,
+      // });
 
       const validationResponse = await fetch(validationUrl, {
         method: "POST",
@@ -221,11 +225,11 @@ const ChallengeWrite = () => {
         }),
       });
 
-      console.log('✅ Validation response received:', {
-        status: validationResponse.status,
-        statusText: validationResponse.statusText,
-        url: validationResponse.url,
-      });
+      // console.log('✅ Validation response received:', {
+      //   status: validationResponse.status,
+      //   statusText: validationResponse.statusText,
+      //   url: validationResponse.url,
+      // });
 
       const validationData = await validationResponse.json();
       console.log('📊 Validation data:', validationData);
@@ -239,7 +243,13 @@ const ChallengeWrite = () => {
 
       // 2단계: 검증 결과가 'yes'인 경우에만 챌린지 완료 처리
       if (!validationData.isValid) {
-        alert(validationData.message || "챌린지 완료 내용이 충분하지 않습니다. 더 구체적으로 작성해주세요.");
+        setFailureMessage(validationData.message || "챌린지 완료 내용이 충분하지 않습니다. 더 구체적으로 작성해주세요.");
+        setShowFailureModal(true);
+
+        // 3초 후 실패 모달 닫기
+        setTimeout(() => {
+          setShowFailureModal(false);
+        }, 3000);
         return;
       }
 
@@ -247,12 +257,16 @@ const ChallengeWrite = () => {
       setSubmitting(true);
       await completeChallenge(challenge.challenge_id, content);
 
-      alert("챌린지를 완료했습니다!");
+      // 성공 모달 표시
+      setShowSuccessModal(true);
 
-      // 완료 후 챌린지 맵으로 돌아가기
-      navigate("/challenge/content", {
-        state: { continentId },
-      });
+      // 2초 후 챌린지 맵으로 돌아가기
+      setTimeout(() => {
+        setShowSuccessModal(false);
+        navigate("/challenge/content", {
+          state: { continentId },
+        });
+      }, 2000);
     } catch (error) {
       console.error("챌린지 완료 실패:", error);
       alert(error.response?.data?.detail || "챌린지 완료에 실패했습니다.");
@@ -273,6 +287,21 @@ const ChallengeWrite = () => {
   return (
     <>
       <Wrapper>
+        {/* 성공 모달 */}
+        <ValidationModal
+          type="success"
+          message="입국 심사가 완료되었습니다"
+          show={showSuccessModal}
+        />
+
+        {/* 실패 모달 */}
+        <ValidationModal
+          type="failure"
+          message="입국 심사가 거부되었습니다"
+          subMessage={failureMessage}
+          show={showFailureModal}
+        />
+
         <TopBar>
           <BackButton
             onClick={() =>
@@ -303,7 +332,7 @@ const ChallengeWrite = () => {
             onClick={handleSubmit}
             disabled={validating || submitting || !content.trim()}
           >
-            {validating ? "AI가 평가 중입니다..." : submitting ? "완료 중..." : "Stamp on Passport"}
+            {"Stamp on Passport"}
           </SubmitButton>
       </Wrapper>
 
@@ -311,7 +340,8 @@ const ChallengeWrite = () => {
       {(validating || submitting) && (
         <LoadingOverlay>
           <LoadingMessage>
-            {validating ? "🤖 AI가 평가 중입니다..." : "💾 저장하는 중..."}
+            {validating && "입국 심사 중..."}
+            {submitting && "도장 찍는 중..."}
           </LoadingMessage>
         </LoadingOverlay>
       )}

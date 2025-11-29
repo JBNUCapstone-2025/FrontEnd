@@ -703,7 +703,7 @@ const ChallengeContent = () => {
                     일상 여정
                   </TypeTitle>
                   <TypeDesc>
-                    일반적인 자기계발 챌린지({basicRemaining}개 남음)
+                    일반적인 자기계발 챌린지({basicRemaining}/5)
                   </TypeDesc>
                 </TypeOption>
                 <TypeOption
