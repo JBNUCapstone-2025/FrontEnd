@@ -11,6 +11,7 @@ import { FaRegBell } from "react-icons/fa";
 
 import ClassModal from "../components/ClassModal";
 import RecommendationModal from "../components/RecommendationModal";
+import SuccessModal from "../components/SuccessModal";
 
 const Wrapper = styled.div`
   display: flex;
@@ -228,6 +229,9 @@ export default function Diary(){
   // 저장된 일기 ID
   const [savedDiaryId, setSavedDiaryId] = useState(null);
 
+  // 저장 성공 모달
+  const [showSaveSuccessModal, setShowSaveSuccessModal] = useState(false);
+
   // 편집 모드로 진입했을 때 기존 일기 데이터를 로드
   useEffect(() => {
     if (location.state?.editMode && location.state?.diaryData) {
@@ -292,7 +296,11 @@ export default function Diary(){
         console.log("응답 데이터:", response.data);
         console.log("=======================");
 
-        alert("일기가 수정되었습니다!");
+        // 수정 성공 모달 표시
+        setShowSaveSuccessModal(true);
+        setTimeout(() => {
+          setShowSaveSuccessModal(false);
+        }, 2000);
       } else {
         // 새 일기 작성 모드: POST 요청
         // emotion 값 설정 (선택 안 했으면 "보통"으로 기본값 설정)
@@ -322,7 +330,12 @@ export default function Diary(){
         console.log("=======================");
 
         setSavedDiaryId(response.data.diary.diary_id);
-        alert("일기가 저장되었습니다!");
+
+        // 저장 성공 모달 표시
+        setShowSaveSuccessModal(true);
+        setTimeout(() => {
+          setShowSaveSuccessModal(false);
+        }, 2000);
       }
     } catch (e) {
       console.error("일기 저장 오류:", e);
@@ -406,6 +419,12 @@ export default function Diary(){
 
   return(
     <Wrapper>
+      {/* 저장 성공 모달 */}
+      <SuccessModal
+        message="일기가 저장되었습니다!"
+        show={showSaveSuccessModal}
+      />
+
       <Container>
         <TopLeft onClick={() => navigate("/main", { state: { initialTab: "diary" } })}/>
         <Header src={logo} alt="logo"/>
