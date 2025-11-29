@@ -364,19 +364,19 @@ export default function RecommendationModal({ data, onClose, onSave, onCategoryS
   useEffect(() => {
     const storedNickname = localStorage.getItem("nick_name") || "사용자";
     const storedCharacterName = localStorage.getItem("character_name") || "친구";
-    const storedCharacter = localStorage.getItem("selected_character");
+    const storedCharacter = localStorage.getItem("character"); // character로 변경
 
     setNickname(storedNickname);
     setCharacterName(storedCharacterName);
 
-    // 캐릭터 이미지 매핑
+    // 캐릭터 이미지 매핑 (캐릭터 ID에 따라)
     const characterMap = {
-      yellow: dog,
-      red: cat,
-      purple: rabbit,
-      pink: racoon,
-      gray: bear,
-      blue: hamster
+      dog: dog,
+      cat: cat,
+      rabbit: rabbit,
+      racoon: racoon,
+      bear: bear,
+      hamster: hamster
     };
 
     setCharacterImage(characterMap[storedCharacter] || dog);

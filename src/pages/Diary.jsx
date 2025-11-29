@@ -423,6 +423,7 @@ export default function Diary(){
       <SuccessModal
         message="일기가 저장되었습니다!"
         show={showSaveSuccessModal}
+        centered
       />
 
       <Container>

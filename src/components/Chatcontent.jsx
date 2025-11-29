@@ -31,6 +31,8 @@ export const ContentWrapper = styled.div`
   border-top: 1px solid #e9e8e8;
   gap: 12px;
   position: relative;
+  flex: 1;
+  min-height: 0;
 `;
 
 /* 페이지 컨테이너: 가로 스크롤 + 스냅 */
@@ -40,6 +42,8 @@ const PagesViewport = styled.div`
   scroll-snap-type: x mandatory;
   -webkit-overflow-scrolling: touch;
   gap: 0;
+  flex: 1;
+  min-height: 0;
   /* 스크롤바 숨김 */
   scrollbar-width: none;
   &::-webkit-scrollbar { display: none; }
@@ -61,6 +65,8 @@ const Dots = styled.div`
   align-self: center;
   gap: 10px;
   padding-top: 4px;
+  margin-top: auto;
+  padding-bottom: 8px;
 `;
 const Dot = styled.button`
   width: 10px;

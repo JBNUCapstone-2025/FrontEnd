@@ -1,6 +1,5 @@
 import React from "react";
 import styled from "styled-components";
-import colors from "../styles/colors";
 import { FaCheckCircle } from "react-icons/fa";
 
 const Overlay = styled.div`
@@ -55,7 +54,7 @@ const Icon = styled(FaCheckCircle)`
   margin: 0 auto 20px;
   display: flex;
   font-size: 30px;
-  color: ${colors.main};
+  color: #9af39a;
   animation: checkmark 0.5s ease-in-out;
 
   @keyframes checkmark {
@@ -82,15 +81,16 @@ const SubMessage = styled.p`
   font-size: 14px;
   color: #666;
   margin-top: 10px;
+  text-align: ${props => props.$centered ? 'center' : 'left'};
 `;
 
-export default function SuccessModal({ message, subMessage, show }) {
+export default function SuccessModal({ message, subMessage, show, centered = false }) {
   if (!show) return null;
 
   return (
     <Overlay>
       <ModalContainer>
-        <SubMessage>{message}<br/>{subMessage}</SubMessage>
+        <SubMessage $centered={centered}>{message}<br/>{subMessage}</SubMessage>
         <Icon/>
       </ModalContainer>
     </Overlay>

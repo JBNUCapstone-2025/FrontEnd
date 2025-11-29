@@ -1,6 +1,5 @@
 import React from "react";
 import styled from "styled-components";
-import colors from "../styles/colors";
 import { FaCheckCircle } from "react-icons/fa";
 import { IoMdCloseCircle } from "react-icons/io";
 
@@ -54,7 +53,7 @@ const SuccessIcon = styled(FaCheckCircle)`
   height: 60px;
   margin: 0 auto 20px;
   display: block;
-  color: ${colors.main};
+  color: #9af39a;
   animation: checkmark 0.5s ease-in-out;
 
   @keyframes checkmark {
@@ -75,7 +74,7 @@ const FailureIcon = styled(IoMdCloseCircle)`
   height: 60px;
   margin: 0 auto 20px;
   display: block;
-  color: #ff4444;
+  color: #f48181;
   animation: checkmark 0.5s ease-in-out;
 
   @keyframes checkmark {
