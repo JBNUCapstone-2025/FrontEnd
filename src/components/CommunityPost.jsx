@@ -4,6 +4,8 @@ import styled from "styled-components";
 import axios from "axios";
 import colors from "../styles/colors";
 import { FaAngleLeft } from "react-icons/fa";
+import SuccessModal from "./SuccessModal";
+import FailureModal from "./FailureModal";
 
 const Wrapper = styled.div`
     display: flex;
@@ -97,6 +99,9 @@ const CommunityPost = () => {
     const category = location.state?.category || "free";
 
     const [content, setContent] = useState("");
+    const [showSuccessModal, setShowSuccessModal] = useState(false);
+    const [showFailureModal, setShowFailureModal] = useState(false);
+    const [failureMessage, setFailureMessage] = useState("");
 
     const handleTextareaChange = (e) => {
         setContent(e.target.value);
@@ -115,7 +120,9 @@ const CommunityPost = () => {
 
     const handleSubmit = async () => {
         if (!content.trim()) {
-            alert("내용을 입력해주세요.");
+            setFailureMessage("내용을 입력해주세요.");
+            setShowFailureModal(true);
+            setTimeout(() => setShowFailureModal(false), 1500);
             return;
         }
 
@@ -134,16 +141,35 @@ const CommunityPost = () => {
                 }
             );
 
-            alert("게시글이 성공적으로 작성되었습니다.");
-            goToList();
+            setShowSuccessModal(true);
+            setTimeout(() => {
+                setShowSuccessModal(false);
+                goToList();
+            }, 1500);
         } catch (error) {
             console.error("게시글 작성 중 오류:", error);
-            alert("게시글 작성에 실패했습니다.");
+            setFailureMessage("게시글 작성에 실패했습니다.");
+            setShowFailureModal(true);
+            setTimeout(() => setShowFailureModal(false), 1500);
         }
     };
 
     return (
         <Wrapper>
+            {/* 성공 모달 */}
+            <SuccessModal
+                message="게시글이 성공적으로 작성되었습니다."
+                show={showSuccessModal}
+                alignCenter
+            />
+
+            {/* 실패 모달 */}
+            <FailureModal
+                message={failureMessage}
+                show={showFailureModal}
+                alignCenter
+            />
+
             <TopBar>
                 <BackButton onClick={goToList} />
                 <Title>글 쓰기</Title>

@@ -300,7 +300,7 @@ export default function Diary(){
         setShowSaveSuccessModal(true);
         setTimeout(() => {
           setShowSaveSuccessModal(false);
-        }, 2000);
+        }, 1500);
       } else {
         // 새 일기 작성 모드: POST 요청
         // emotion 값 설정 (선택 안 했으면 "보통"으로 기본값 설정)
@@ -335,7 +335,7 @@ export default function Diary(){
         setShowSaveSuccessModal(true);
         setTimeout(() => {
           setShowSaveSuccessModal(false);
-        }, 2000);
+        }, 1500);
       }
     } catch (e) {
       console.error("일기 저장 오류:", e);

@@ -7,6 +7,9 @@ import colors from "../styles/colors";
 import { FaAngleLeft, FaAngleRight, FaCheck } from "react-icons/fa";
 import axios from "axios";
 import { FaRegUserCircle } from "react-icons/fa";
+import SuccessModal from "../components/SuccessModal";
+import FailureModal from "../components/FailureModal";
+import ConfirmModal from "../components/ConfirmModal";
 
 import bearImg from "../img/character/bear.png";
 import catImg from "../img/character/cat.png";
@@ -256,6 +259,15 @@ const Profile = () => {
     const [currentPassword, setCurrentPassword] = useState("");
     const [newPassword, setNewPassword] = useState("");
 
+    // Modal states
+    const [showSuccessModal, setShowSuccessModal] = useState(false);
+    const [successMessage, setSuccessMessage] = useState("");
+    const [showFailureModal, setShowFailureModal] = useState(false);
+    const [failureMessage, setFailureMessage] = useState("");
+    const [showConfirmModal, setShowConfirmModal] = useState(false);
+    const [confirmMessage, setConfirmMessage] = useState("");
+    const [confirmAction, setConfirmAction] = useState(null);
+
     const characters = [
         { id: "bear", name: "곰", img: bearImg },
         { id: "cat", name: "고양이", img: catImg },
@@ -273,9 +285,22 @@ const Profile = () => {
         setNewPassword("");
     };
 
+    const handleConfirm = async () => {
+        setShowConfirmModal(false);
+        if (confirmAction) {
+            await confirmAction();
+        }
+    };
+
+    const handleCancel = () => {
+        setShowConfirmModal(false);
+    };
+
     const handleCharacterSubmit = async () => {
         if (!selectedCharacter || !characterName.trim()) {
-            alert("캐릭터와 이름을 모두 선택/입력해주세요.");
+            setFailureMessage("캐릭터와 이름을 모두 선택/입력해주세요.");
+            setShowFailureModal(true);
+            setTimeout(() => setShowFailureModal(false), 2000);
             return;
         }
 
@@ -283,7 +308,9 @@ const Profile = () => {
             const accessToken = localStorage.getItem("access_token");
 
             if (!accessToken) {
-                alert("로그인이 필요합니다.");
+                setFailureMessage("로그인이 필요합니다.");
+                setShowFailureModal(true);
+                setTimeout(() => setShowFailureModal(false), 2000);
                 return;
             }
 
@@ -310,11 +337,17 @@ const Profile = () => {
                 localStorage.setItem("character_name", response.data.character_name);
             }
 
-            alert("캐릭터가 성공적으로 변경되었습니다.");
-            closeModal();
+            setSuccessMessage("캐릭터가 성공적으로 변경되었습니다.");
+            setShowSuccessModal(true);
+            setTimeout(() => {
+                setShowSuccessModal(false);
+                closeModal();
+            }, 2000);
         } catch (error) {
             console.error("캐릭터 변경 실패:", error);
-            alert("캐릭터 변경에 실패했습니다.");
+            setFailureMessage("캐릭터 변경에 실패했습니다.");
+            setShowFailureModal(true);
+            setTimeout(() => setShowFailureModal(false), 2000);
         }
     };
 
@@ -341,28 +374,41 @@ const Profile = () => {
         }
     };
 
-    const handleWithdraw = async () => {
-        try {
-            const accessToken = localStorage.getItem("access_token");
+    const handleWithdrawClick = () => {
+        setConfirmMessage("여기서 비행을 마무리할까요?");
+        setConfirmAction(() => async () => {
+            try {
+                const accessToken = localStorage.getItem("access_token");
 
-            if (!accessToken) {
-                alert("로그인이 필요합니다.");
-                return;
-            }
-
-            await axios.delete("/user/withdraw", {
-                headers: {
-                    Authorization: `Bearer ${accessToken}`
+                if (!accessToken) {
+                    setFailureMessage("로그인이 필요합니다.");
+                    setShowFailureModal(true);
+                    setTimeout(() => setShowFailureModal(false), 2000);
+                    return;
                 }
-            });
 
-            alert("회원탈퇴가 완료되었습니다.");
-            localStorage.clear();
-            navigate("/login");
-        } catch (error) {
-            console.error("회원탈퇴 실패:", error);
-            alert("회원탈퇴에 실패했습니다.");
-        }
+                await axios.delete("/user/withdraw", {
+                    headers: {
+                        Authorization: `Bearer ${accessToken}`
+                    }
+                });
+
+                setSuccessMessage("회원탈퇴가 완료되었습니다.");
+                setShowSuccessModal(true);
+                setTimeout(() => {
+                    setShowSuccessModal(false);
+                    localStorage.clear();
+                    navigate("/login");
+                }, 2000);
+            } catch (error) {
+                console.error("회원탈퇴 실패:", error);
+                setFailureMessage("회원탈퇴에 실패했습니다.");
+                setShowFailureModal(true);
+                setTimeout(() => setShowFailureModal(false), 2000);
+            }
+        });
+        setShowConfirmModal(true);
+        closeModal();
     };
 
     const handleUserInfoSubmit = async () => {
@@ -370,13 +416,17 @@ const Profile = () => {
             const accessToken = localStorage.getItem("access_token");
 
             if (!accessToken) {
-                alert("로그인이 필요합니다.");
+                setFailureMessage("로그인이 필요합니다.");
+                setShowFailureModal(true);
+                setTimeout(() => setShowFailureModal(false), 2000);
                 return;
             }
 
             // 빈 값 검증
             if (!userInfo.person_name || !userInfo.nick_name || !userInfo.email || !userInfo.phone || !userInfo.birth) {
-                alert("모든 필드를 입력해주세요.");
+                setFailureMessage("모든 필드를 입력해주세요.");
+                setShowFailureModal(true);
+                setTimeout(() => setShowFailureModal(false), 2000);
                 return;
             }
 
@@ -405,13 +455,19 @@ const Profile = () => {
             localStorage.setItem("birth", userInfo.birth);
             localStorage.setItem("gender", userInfo.gender);
 
-            alert("회원정보가 성공적으로 변경되었습니다.");
-            closeModal();
+            setSuccessMessage("회원정보가 성공적으로 변경되었습니다.");
+            setShowSuccessModal(true);
+            setTimeout(() => {
+                setShowSuccessModal(false);
+                closeModal();
+            }, 2000);
         } catch (error) {
             console.error("회원정보 변경 실패:", error);
             console.error("에러 응답:", error.response?.data);
             const errorMessage = error.response?.data?.detail || "회원정보 변경에 실패했습니다.";
-            alert(errorMessage);
+            setFailureMessage(errorMessage);
+            setShowFailureModal(true);
+            setTimeout(() => setShowFailureModal(false), 2000);
         }
     };
 
@@ -420,12 +476,16 @@ const Profile = () => {
             const accessToken = localStorage.getItem("access_token");
 
             if (!accessToken) {
-                alert("로그인이 필요합니다.");
+                setFailureMessage("로그인이 필요합니다.");
+                setShowFailureModal(true);
+                setTimeout(() => setShowFailureModal(false), 2000);
                 return;
             }
 
             if (!currentPassword || !newPassword) {
-                alert("현재 비밀번호와 새 비밀번호를 모두 입력해주세요.");
+                setFailureMessage("현재 비밀번호와 새 비밀번호를 모두 입력해주세요.");
+                setShowFailureModal(true);
+                setTimeout(() => setShowFailureModal(false), 2000);
                 return;
             }
 
@@ -438,13 +498,19 @@ const Profile = () => {
                 }
             });
 
-            alert("비밀번호가 성공적으로 변경되었습니다.");
-            closeModal();
+            setSuccessMessage("비밀번호가 성공적으로 변경되었습니다.");
+            setShowSuccessModal(true);
+            setTimeout(() => {
+                setShowSuccessModal(false);
+                closeModal();
+            }, 2000);
         } catch (error) {
             console.error("비밀번호 변경 실패:", error);
             console.error("에러 응답:", error.response?.data);
             const errorMessage = error.response?.data?.detail || "비밀번호 변경에 실패했습니다.";
-            alert(errorMessage);
+            setFailureMessage(errorMessage);
+            setShowFailureModal(true);
+            setTimeout(() => setShowFailureModal(false), 2000);
         }
     };
 
@@ -587,7 +653,7 @@ const Profile = () => {
                             <Button className="cancel" onClick={closeModal}>
                                 취소
                             </Button>
-                            <Button className="confirm" onClick={handleWithdraw}>
+                            <Button className="confirm" onClick={handleWithdrawClick}>
                                 탈퇴하기
                             </Button>
                         </ButtonGroup>
@@ -615,11 +681,32 @@ const Profile = () => {
 
     return(
         <Wrapper>
+            {/* Success Modal */}
+            <SuccessModal
+                message={successMessage}
+                show={showSuccessModal}
+                centered
+            />
+
+            {/* Failure Modal */}
+            <FailureModal
+                message={failureMessage}
+                show={showFailureModal}
+                centered
+            />
+
+            {/* Confirm Modal */}
+            <ConfirmModal
+                message={confirmMessage}
+                show={showConfirmModal}
+                onConfirm={handleConfirm}
+                onCancel={handleCancel}
+            />
+
             <Top>
                 <Left onClick={() => navigate("/mypage")}/>
                 <Title>내 계정</Title>
             </Top>
-            <UserIcon/>
             <Container>
                 <Content onClick={() => setModalType('userInfo')}>회원정보 변경</Content>
                 <Content onClick={() => setModalType('password')}>비밀번호 변경</Content>

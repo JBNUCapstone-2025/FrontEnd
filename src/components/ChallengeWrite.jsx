@@ -249,7 +249,7 @@ const ChallengeWrite = () => {
         // 3초 후 실패 모달 닫기
         setTimeout(() => {
           setShowFailureModal(false);
-        }, 3000);
+        }, 1500);
         return;
       }
 
@@ -266,7 +266,7 @@ const ChallengeWrite = () => {
         navigate("/challenge/content", {
           state: { continentId },
         });
-      }, 2000);
+      }, 1500);
     } catch (error) {
       console.error("챌린지 완료 실패:", error);
       alert(error.response?.data?.detail || "챌린지 완료에 실패했습니다.");

@@ -140,7 +140,7 @@ const WriteButton = styled.button`
     width: 50px;
     height: 50px;
     border-radius: 50%;
-    background: ${colors.sub};
+    background: ${colors.text};
     border: none;
     display: flex;
     align-items: center;

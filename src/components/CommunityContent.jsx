@@ -3,6 +3,9 @@ import styled from "styled-components";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import Header from "./Header";
 import colors from "../styles/colors";
+import SuccessModal from "./SuccessModal";
+import FailureModal from "./FailureModal";
+import ConfirmModal from "./ConfirmModal";
 
 import { FaAngleLeft, FaRegHeart, FaHeart, FaRegUserCircle, FaEllipsisV } from "react-icons/fa";
 import { FaRegComment } from "react-icons/fa6";
@@ -244,7 +247,7 @@ const CommentInput = styled.input`
 
 const SendButton = styled.button`
     padding: 10px 16px;
-    background: ${colors.sub};
+    background: ${colors.text};
     color: white;
     border: none;
     border-radius: 20px;
@@ -321,8 +324,8 @@ const EditButton = styled.button`
     font-size: 13px;
     cursor: pointer;
     border: none;
-    background: ${props => props.$primary ? colors.sub : '#eee'};
-    color: ${props => props.$primary ? 'white' : colors.text};
+    background: ${props => props.$primary ? colors.text : '#c2c0c0'};
+    color: white;
 `;
 
 const categoryNames = {
@@ -354,6 +357,13 @@ const CommunityContent = () => {
     const [editingCommentId, setEditingCommentId] = useState(null);
     const [editCommentContent, setEditCommentContent] = useState("");
     const [showCommentMenu, setShowCommentMenu] = useState(null);
+    const [showSuccessModal, setShowSuccessModal] = useState(false);
+    const [successMessage, setSuccessMessage] = useState("");
+    const [showFailureModal, setShowFailureModal] = useState(false);
+    const [failureMessage, setFailureMessage] = useState("");
+    const [showConfirmModal, setShowConfirmModal] = useState(false);
+    const [confirmMessage, setConfirmMessage] = useState("");
+    const [confirmAction, setConfirmAction] = useState(null);
 
     const fetchPost = async () => {
         setLoading(true);
@@ -465,7 +475,9 @@ const CommunityContent = () => {
 
             if (!response.ok) {
                 console.error("댓글 작성 실패:", response.status);
-                alert("댓글 작성에 실패했습니다.");
+                setFailureMessage("댓글 작성에 실패했습니다.");
+                setShowFailureModal(true);
+                setTimeout(() => setShowFailureModal(false), 1500);
                 return;
             }
 
@@ -474,7 +486,9 @@ const CommunityContent = () => {
             fetchPost();
         } catch (error) {
             console.error("댓글 작성 오류:", error);
-            alert("댓글 작성 중 오류가 발생했습니다.");
+            setFailureMessage("댓글 작성 중 오류가 발생했습니다.");
+            setShowFailureModal(true);
+            setTimeout(() => setShowFailureModal(false), 1500);
         } finally {
             setSubmittingComment(false);
         }
@@ -517,32 +531,42 @@ const CommunityContent = () => {
     };
 
     // 게시글 삭제
-    const handleDeletePost = async () => {
-        if (!window.confirm("게시글을 삭제하시겠습니까?")) return;
+    const handleDeletePost = () => {
+        setConfirmMessage("게시글을 삭제하시겠습니까?");
+        setConfirmAction(() => async () => {
+            try {
+                const token = localStorage.getItem("access_token");
+                const headers = {};
+                if (token) headers["Authorization"] = `Bearer ${token}`;
 
-        try {
-            const token = localStorage.getItem("access_token");
-            const headers = {};
-            if (token) headers["Authorization"] = `Bearer ${token}`;
+                const response = await fetch(`${API_BASE}/community/board/${boardId}`, {
+                    method: "DELETE",
+                    headers
+                });
 
-            const response = await fetch(`${API_BASE}/community/board/${boardId}`, {
-                method: "DELETE",
-                headers
-            });
+                if (!response.ok) {
+                    console.error("게시글 삭제 실패:", response.status);
+                    setFailureMessage("게시글 삭제에 실패했습니다.");
+                    setShowFailureModal(true);
+                    setTimeout(() => setShowFailureModal(false), 1500);
+                    return;
+                }
 
-            if (!response.ok) {
-                console.error("게시글 삭제 실패:", response.status);
-                alert("게시글 삭제에 실패했습니다.");
-                return;
+                setSuccessMessage("게시글이 삭제되었습니다.");
+                setShowSuccessModal(true);
+                setTimeout(() => {
+                    setShowSuccessModal(false);
+                    navigate("/board");
+                }, 1500);
+            } catch (error) {
+                console.error("게시글 삭제 오류:", error);
+                setFailureMessage("게시글 삭제 중 오류가 발생했습니다.");
+                setShowFailureModal(true);
+                setTimeout(() => setShowFailureModal(false), 1500);
             }
-
-            alert("게시글이 삭제되었습니다.");
-            navigate("/board");
-        } catch (error) {
-            console.error("게시글 삭제 오류:", error);
-            alert("게시글 삭제 중 오류가 발생했습니다.");
-        }
-        setShowPostMenu(false);
+            setShowPostMenu(false);
+        });
+        setShowConfirmModal(true);
     };
 
     // 게시글 수정 시작
@@ -573,44 +597,60 @@ const CommunityContent = () => {
 
             if (!response.ok) {
                 console.error("게시글 수정 실패:", response.status);
-                alert("게시글 수정에 실패했습니다.");
+                setFailureMessage("게시글 수정에 실패했습니다.");
+                setShowFailureModal(true);
+                setTimeout(() => setShowFailureModal(false), 1500);
                 return;
             }
 
             setEditingPost(false);
+            setSuccessMessage("게시글이 수정되었습니다.");
+            setShowSuccessModal(true);
+            setTimeout(() => setShowSuccessModal(false), 1500);
             fetchPost();
         } catch (error) {
             console.error("게시글 수정 오류:", error);
-            alert("게시글 수정 중 오류가 발생했습니다.");
+            setFailureMessage("게시글 수정 중 오류가 발생했습니다.");
+            setShowFailureModal(true);
+            setTimeout(() => setShowFailureModal(false), 1500);
         }
     };
 
     // 댓글 삭제
-    const handleDeleteComment = async (commentId) => {
-        if (!window.confirm("댓글을 삭제하시겠습니까?")) return;
+    const handleDeleteComment = (commentId) => {
+        setConfirmMessage("댓글을 삭제하시겠습니까?");
+        setConfirmAction(() => async () => {
+            try {
+                const token = localStorage.getItem("access_token");
+                const headers = {};
+                if (token) headers["Authorization"] = `Bearer ${token}`;
 
-        try {
-            const token = localStorage.getItem("access_token");
-            const headers = {};
-            if (token) headers["Authorization"] = `Bearer ${token}`;
+                const response = await fetch(`${API_BASE}/community/comment/${commentId}`, {
+                    method: "DELETE",
+                    headers
+                });
 
-            const response = await fetch(`${API_BASE}/community/comment/${commentId}`, {
-                method: "DELETE",
-                headers
-            });
+                if (!response.ok) {
+                    console.error("댓글 삭제 실패:", response.status);
+                    setFailureMessage("댓글 삭제에 실패했습니다.");
+                    setShowFailureModal(true);
+                    setTimeout(() => setShowFailureModal(false), 1500);
+                    return;
+                }
 
-            if (!response.ok) {
-                console.error("댓글 삭제 실패:", response.status);
-                alert("댓글 삭제에 실패했습니다.");
-                return;
+                setSuccessMessage("댓글이 삭제되었습니다.");
+                setShowSuccessModal(true);
+                setTimeout(() => setShowSuccessModal(false), 1500);
+                fetchPost();
+            } catch (error) {
+                console.error("댓글 삭제 오류:", error);
+                setFailureMessage("댓글 삭제 중 오류가 발생했습니다.");
+                setShowFailureModal(true);
+                setTimeout(() => setShowFailureModal(false), 1500);
             }
-
-            fetchPost();
-        } catch (error) {
-            console.error("댓글 삭제 오류:", error);
-            alert("댓글 삭제 중 오류가 발생했습니다.");
-        }
-        setShowCommentMenu(null);
+            setShowCommentMenu(null);
+        });
+        setShowConfirmModal(true);
     };
 
     // 댓글 수정 시작
@@ -637,21 +677,62 @@ const CommunityContent = () => {
 
             if (!response.ok) {
                 console.error("댓글 수정 실패:", response.status);
-                alert("댓글 수정에 실패했습니다.");
+                setFailureMessage("댓글 수정에 실패했습니다.");
+                setShowFailureModal(true);
+                setTimeout(() => setShowFailureModal(false), 1500);
                 return;
             }
 
             setEditingCommentId(null);
             setEditCommentContent("");
+            setSuccessMessage("댓글이 수정되었습니다.");
+            setShowSuccessModal(true);
+            setTimeout(() => setShowSuccessModal(false), 1500);
             fetchPost();
         } catch (error) {
             console.error("댓글 수정 오류:", error);
-            alert("댓글 수정 중 오류가 발생했습니다.");
+            setFailureMessage("댓글 수정 중 오류가 발생했습니다.");
+            setShowFailureModal(true);
+            setTimeout(() => setShowFailureModal(false), 1500);
         }
+    };
+
+    const handleConfirm = async () => {
+        setShowConfirmModal(false);
+        if (confirmAction) {
+            await confirmAction();
+        }
+    };
+
+    const handleCancel = () => {
+        setShowConfirmModal(false);
+        setConfirmAction(null);
     };
 
     return (
         <Wrapper>
+            {/* 확인 모달 */}
+            <ConfirmModal
+                message={confirmMessage}
+                show={showConfirmModal}
+                onConfirm={handleConfirm}
+                onCancel={handleCancel}
+            />
+
+            {/* 성공 모달 */}
+            <SuccessModal
+                message={successMessage}
+                show={showSuccessModal}
+                alignCenter
+            />
+
+            {/* 실패 모달 */}
+            <FailureModal
+                message={failureMessage}
+                show={showFailureModal}
+                alignCenter
+            />
+
             <TopBar>
                 <BackButton onClick={handleBack} />
                 <Title>{post ? categoryNames[post.category] || "게시판" : "게시판"}</Title>
@@ -720,7 +801,7 @@ const CommunityContent = () => {
                                             <CommentUserIcon />
                                             <div>
                                                 <CommentUserName $isAuthor={comment.is_author}>
-                                                    {comment.is_author ? "익명(글쓴이)" : `익명${comment.anonymous_number - 1}`}
+                                                    {comment.is_author ? "글쓴이(익명1)" : `익명${comment.anonymous_number}`}
                                                 </CommentUserName>
                                                 <CommentTime>{formatDate(comment.create_date)}</CommentTime>
                                             </div>
