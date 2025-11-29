@@ -323,19 +323,51 @@ const GreetingMessage = styled.div`
   padding: 10px 15px;
 `;
 
+const LoadingContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  gap: 20px;
+`;
+
+const LoadingMessage = styled.div`
+  font-size: 16px;
+  font-weight: 600;
+  color: black;
+  text-align: center;
+  animation: pulse 1.5s ease-in-out infinite;
+
+  @keyframes pulse {
+    0%, 100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.5;
+    }
+  }
+`;
+
 export default function RecommendationModal({ data, onClose, onSave, onCategorySelect }) {
   // 선택된 카테고리 (null: 카테고리 선택 화면, 'books'/'music'/'food': 해당 카테고리 아이템 선택)
   const [selectedCategory, setSelectedCategory] = useState(null);
 
+  // 로딩 상태
+  const [isLoading, setIsLoading] = useState(false);
+
   // 로컬 스토리지에서 닉네임과 캐릭터 가져오기
   const [nickname, setNickname] = useState("");
+  const [characterName, setCharacterName] = useState("");
   const [characterImage, setCharacterImage] = useState(null);
 
   useEffect(() => {
     const storedNickname = localStorage.getItem("nick_name") || "사용자";
+    const storedCharacterName = localStorage.getItem("character_name") || "친구";
     const storedCharacter = localStorage.getItem("selected_character");
 
     setNickname(storedNickname);
+    setCharacterName(storedCharacterName);
 
     // 캐릭터 이미지 매핑
     const characterMap = {
@@ -406,19 +438,22 @@ export default function RecommendationModal({ data, onClose, onSave, onCategoryS
   ];
 
   const handleCategorySelect = async (categoryKey) => {
-    console.log("=== RecommendationModal handleCategorySelect 호출됨 ===");
-    console.log("선택된 카테고리:", categoryKey);
-    console.log("onCategorySelect 함수 존재:", !!onCategorySelect);
+    // console.log("=== RecommendationModal handleCategorySelect 호출됨 ===");
+    // console.log("선택된 카테고리:", categoryKey);
+    // console.log("onCategorySelect 함수 존재:", !!onCategorySelect);
 
     setSelectedCategory(categoryKey);
+    setIsLoading(true);
 
     // Diary.jsx에서 전달된 onCategorySelect 호출 (API 요청)
     if (onCategorySelect) {
-      console.log("onCategorySelect 호출 중...");
+      // console.log("onCategorySelect 호출 중...");
       await onCategorySelect(categoryKey);
-      console.log("onCategorySelect 완료");
+      // console.log("onCategorySelect 완료");
+      setIsLoading(false);
     } else {
-      console.warn("onCategorySelect 함수가 전달되지 않았습니다!");
+      // console.warn("onCategorySelect 함수가 전달되지 않았습니다!");
+      setIsLoading(false);
     }
   };
 
@@ -482,59 +517,68 @@ export default function RecommendationModal({ data, onClose, onSave, onCategoryS
         {/* 아이템 선택 화면 */}
         {selectedCategory && currentCategory && (
           <>
-            {/* 캐릭터와 인사 메시지 */}
-            <CharacterSection>
-              <CharacterImage src={characterImage} alt="character" />
-              <GreetingMessage>{greetingMessage}</GreetingMessage>
-            </CharacterSection>
+            {isLoading ? (
+              <LoadingContainer>
+                <CharacterImage src={characterImage} alt="character" />
+                <LoadingMessage>{characterName}가 추천 컨텐츠 찾는 중...</LoadingMessage>
+              </LoadingContainer>
+            ) : (
+              <>
+                {/* 캐릭터와 인사 메시지 */}
+                <CharacterSection>
+                  <CharacterImage src={characterImage} alt="character" />
+                  <GreetingMessage>{greetingMessage}</GreetingMessage>
+                </CharacterSection>
 
-            <Section>
-              {currentCategory.items.slice(0, 1).map((item, idx) => (
-                <RecommendationItem key={idx}>
-                  {selectedCategory === 'book' && (
-                    <>
-                      {item.cover_image_url && <CoverImage src={item.cover_image_url} alt={item.title} />}
-                      <ItemTitle>{item.title || item}</ItemTitle>
-                      {item.subtitle && <ItemSubtitle>{item.subtitle}</ItemSubtitle>}
-                      {item.author && <ItemSubtitle>저자: {item.author}</ItemSubtitle>}
-                      {item.publisher && <ItemSubtitle>출판사: {item.publisher}</ItemSubtitle>}
-                      {item.detail_url && (
-                        <ItemSubtitle>
-                          <DetailLink href={item.detail_url} target="_blank" rel="noopener noreferrer">바로가기</DetailLink>
-                        </ItemSubtitle>
+                <Section>
+                  {currentCategory.items.slice(0, 1).map((item, idx) => (
+                    <RecommendationItem key={idx}>
+                      {selectedCategory === 'book' && (
+                        <>
+                          {item.cover_image_url && <CoverImage src={item.cover_image_url} alt={item.title} />}
+                          <ItemTitle>{item.title || item}</ItemTitle>
+                          {item.subtitle && <ItemSubtitle>{item.subtitle}</ItemSubtitle>}
+                          {item.author && <ItemSubtitle>저자: {item.author}</ItemSubtitle>}
+                          {item.publisher && <ItemSubtitle>출판사: {item.publisher}</ItemSubtitle>}
+                          {item.detail_url && (
+                            <ItemSubtitle>
+                              <DetailLink href={item.detail_url} target="_blank" rel="noopener noreferrer">바로가기</DetailLink>
+                            </ItemSubtitle>
+                          )}
+                        </>
                       )}
-                    </>
-                  )}
-                  {selectedCategory === 'music' && (
-                    <>
-                      {item.cover_url && <CoverImage src={item.cover_url} alt={item.title} />}
-                      <ItemTitle>{item.title || item}</ItemTitle>
-                      {item.artist && <ItemSubtitle>아티스트: {item.artist}</ItemSubtitle>}
-                      {item.album && <ItemSubtitle>앨범: {item.album}</ItemSubtitle>}
-                      {item.genre && <ItemSubtitle>장르: {item.genre}</ItemSubtitle>}
-                      {item.dj_tags && item.dj_tags.length > 0 && (
-                        <ItemSubtitle>태그: {item.dj_tags.join(', ')}</ItemSubtitle>
+                      {selectedCategory === 'music' && (
+                        <>
+                          {item.cover_url && <CoverImage src={item.cover_url} alt={item.title} />}
+                          <ItemTitle>{item.title || item}</ItemTitle>
+                          {item.artist && <ItemSubtitle>아티스트: {item.artist}</ItemSubtitle>}
+                          {item.album && <ItemSubtitle>앨범: {item.album}</ItemSubtitle>}
+                          {item.genre && <ItemSubtitle>장르: {item.genre}</ItemSubtitle>}
+                          {item.dj_tags && item.dj_tags.length > 0 && (
+                            <ItemSubtitle>태그: {item.dj_tags.join(', ')}</ItemSubtitle>
+                          )}
+                        </>
                       )}
-                    </>
-                  )}
-                  {selectedCategory === 'food' && (
-                    <>
-                      {item.cover_image_url && <CoverImage src={item.cover_image_url} alt={item.name} />}
-                      <ItemTitle>{item.name || item}</ItemTitle>
-                      {item.menu && <ItemSubtitle>메뉴: {item.menu}</ItemSubtitle>}
-                      {item.position && <ItemSubtitle>위치: {item.position}</ItemSubtitle>}
-                      {item.time && <ItemSubtitle>영업시간: {item.time}</ItemSubtitle>}
-                      {item.scope && <ItemSubtitle>평점: {item.scope}</ItemSubtitle>}
-                      
-                    </>
-                  )}
-                </RecommendationItem>
-              ))}
-            </Section>
+                      {selectedCategory === 'food' && (
+                        <>
+                          {item.cover_image_url && <CoverImage src={item.cover_image_url} alt={item.name} />}
+                          <ItemTitle>{item.name || item}</ItemTitle>
+                          {item.menu && <ItemSubtitle>메뉴: {item.menu}</ItemSubtitle>}
+                          {item.position && <ItemSubtitle>위치: {item.position}</ItemSubtitle>}
+                          {item.time && <ItemSubtitle>영업시간: {item.time}</ItemSubtitle>}
+                          {item.scope && <ItemSubtitle>평점: {item.scope}</ItemSubtitle>}
 
-            <SaveButton onClick={handleSave}>
-              저장하기
-            </SaveButton>
+                        </>
+                      )}
+                    </RecommendationItem>
+                  ))}
+                </Section>
+
+                <SaveButton onClick={handleSave}>
+                  저장하기
+                </SaveButton>
+              </>
+            )}
           </>
         )}
       </ModalContainer>

@@ -1,6 +1,7 @@
 // src/pages/Main.jsx
 import React,{useState, useEffect} from "react";
 import styled from "styled-components";
+import { useLocation } from "react-router-dom";
 import Header from "../components/Header";
 import Character from "../components/Character";
 import ChatContent from "../components/Chatcontent";
@@ -72,11 +73,19 @@ const Divider = styled.p`
 `;
 
 export default function Main(){
+  const location = useLocation();
   const [selectedTab, setSelectedTab] = useState("chat");
 
   // 캐릭터 선택 관련
   const [, setCharacter] = useState(() => localStorage.getItem("character") || null);
   const [openCharacter, setOpenCharacter] = useState(() => !localStorage.getItem("character"));
+
+  // location state에서 initialTab을 받아서 탭 설정
+  useEffect(() => {
+    if (location.state?.initialTab) {
+      setSelectedTab(location.state.initialTab);
+    }
+  }, [location.state]);
 
   useEffect(() => {
     if (openCharacter) {

@@ -279,10 +279,10 @@ export default function Diary(){
           content: diaryText
         };
 
-        console.log("=== PUT /diary/ 요청 데이터 ===");
-        console.log("Diary ID:", savedDiaryId);
-        console.log(updateData);
-        console.log("================================");
+        // console.log("=== PUT /diary/ 요청 데이터 ===");
+        // console.log("Diary ID:", savedDiaryId);
+        // console.log(updateData);
+        // console.log("================================");
 
         const response = await axios.put(`/diary/${savedDiaryId}`, updateData, {
           headers: headers
@@ -400,14 +400,14 @@ export default function Diary(){
     setSelectedClass(null);
     setSavedDiaryId(null);
 
-    // /main 경로로 이동
-    navigate("/main");
+    // /main 경로로 이동 (일기 탭으로)
+    navigate("/main", { state: { initialTab: "diary" } });
   };
 
   return(
     <Wrapper>
       <Container>
-        <TopLeft onClick={() => navigate("/main")}/>
+        <TopLeft onClick={() => navigate("/main", { state: { initialTab: "diary" } })}/>
         <Header src={logo} alt="logo"/>
         <Bell onClick={handleBellClick} style={{ opacity: savedDiaryId ? 1 : 0.3, cursor: savedDiaryId ? 'pointer' : 'not-allowed' }} />
       </Container>
