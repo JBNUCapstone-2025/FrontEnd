@@ -1,6 +1,6 @@
 import React from "react";
 import styled from "styled-components";
-import { FaCheckCircle } from "react-icons/fa";
+import { IoMdCloseCircle } from "react-icons/io";
 import colors from "../styles/colors";
 
 const Overlay = styled.div`
@@ -51,7 +51,7 @@ const ModalContainer = styled.div`
   }
 `;
 
-const Icon = styled(FaCheckCircle)`
+const Icon = styled(IoMdCloseCircle)`
   width: 40px;
   height: 40px;
   border-radius: 50%;
@@ -59,7 +59,7 @@ const Icon = styled(FaCheckCircle)`
   margin: 0 auto 20px;
   display: flex;
   font-size: 30px;
-  color: ${colors.text};
+  color: #f27d7d;
   animation: checkmark 0.5s ease-in-out;
 
   @keyframes checkmark {
@@ -78,7 +78,7 @@ const Icon = styled(FaCheckCircle)`
 const Message = styled.h2`
   font-size: 20px;
   font-weight: bold;
-  color: #333;
+  color: ${colors.airplanebody};
   margin: 0;
 `;
 
@@ -89,7 +89,7 @@ const SubMessage = styled.p`
   text-align: ${props => props.$centered ? 'center' : 'left'};
 `;
 
-export default function SuccessModal({ message, subMessage, show, centered = false, alignCenter = false }) {
+export default function FailureModal({ message, subMessage, show, centered = false, alignCenter = false }) {
   if (!show) return null;
 
   return (

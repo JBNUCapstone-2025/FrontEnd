@@ -3,6 +3,7 @@ import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
 import colors from "../styles/colors";
 import SuccessModal from "../components/SuccessModal";
+import FailureModal from "../components/FailureModal";
 // import logo from "../logo/logo.png";
 // import background from "../img/challenge_background.png";
 // import back1 from "../img/login_back1.png";
@@ -85,6 +86,8 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [showFailureModal, setShowFailureModal] = useState(false);
+  const [failureMessage, setFailureMessage] = useState("");
   const navigate = useNavigate();
 
   const isDisabled = id.trim() === "" || password.trim() === "";
@@ -152,7 +155,15 @@ export default function Login() {
       }, 1000);
     } catch (err) {
       console.error("로그인 에러:", err);
-      alert(err.message || "로그인 중 오류가 발생했습니다.");
+
+      // 실패 모달 표시
+      setFailureMessage(err.message || "로그인 중 오류가 발생했습니다.");
+      setShowFailureModal(true);
+
+      // 3초 후 실패 모달 닫기
+      setTimeout(() => {
+        setShowFailureModal(false);
+      }, 1000);
     } finally {
       setLoading(false);
     }
@@ -164,11 +175,21 @@ export default function Login() {
 
   return (
     <Wrapper>
+      {/* 성공 모달 */}
       <SuccessModal
         message="마음으로 통하는 하늘의 입구,"
         subMessage="MINDTRIP에 오신 걸 환영합니다!"
         show={showSuccessModal}
+        alignCenter
       />
+
+      {/* 실패 모달 */}
+      <FailureModal
+        message={failureMessage}
+        show={showFailureModal}
+        alignCenter
+      />
+
       <Container>
         <Title src={logo1} alt="logo" />
         <Input

@@ -2,6 +2,7 @@ import React from "react";
 import styled from "styled-components";
 import { FaCheckCircle } from "react-icons/fa";
 import { IoMdCloseCircle } from "react-icons/io";
+import colors from "../styles/colors";
 
 const Overlay = styled.div`
   position: fixed;
@@ -49,8 +50,8 @@ const ModalContainer = styled.div`
 `;
 
 const SuccessIcon = styled(FaCheckCircle)`
-  width: 60px;
-  height: 60px;
+  width: 40px;
+  height: 40px;
   margin: 0 auto 20px;
   display: block;
   color: #9af39a;
@@ -70,8 +71,8 @@ const SuccessIcon = styled(FaCheckCircle)`
 `;
 
 const FailureIcon = styled(IoMdCloseCircle)`
-  width: 60px;
-  height: 60px;
+  width: 40px;
+  height: 40px;
   margin: 0 auto 20px;
   display: block;
   color: #f48181;
@@ -93,13 +94,13 @@ const FailureIcon = styled(IoMdCloseCircle)`
 const Message = styled.h2`
   font-size: 18px;
   font-weight: bold;
-  color: #333;
+  color: ${colors.airplanebody};
   margin: 0;
 `;
 
 const SubMessage = styled.p`
   font-size: 14px;
-  color: #666;
+  color: ${colors.airplanebody};
   margin-top: 10px;
   line-height: 1.5;
 `;
