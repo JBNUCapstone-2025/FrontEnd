@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
 import colors from "../styles/colors";
+import SuccessModal from "../components/SuccessModal";
 // import logo from "../logo/logo.png";
 // import background from "../img/challenge_background.png";
 // import back1 from "../img/login_back1.png";
@@ -83,6 +84,7 @@ export default function Login() {
   const [id, setId] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
   const navigate = useNavigate();
 
   const isDisabled = id.trim() === "" || password.trim() === "";
@@ -140,8 +142,14 @@ export default function Login() {
         }
       }
 
-      alert("로그인 성공!");
-      navigate("/main");
+      // 성공 모달 표시
+      setShowSuccessModal(true);
+
+      // 2초 후 메인 페이지로 이동
+      setTimeout(() => {
+        setShowSuccessModal(false);
+        navigate("/main");
+      }, 1000);
     } catch (err) {
       console.error("로그인 에러:", err);
       alert(err.message || "로그인 중 오류가 발생했습니다.");
@@ -156,6 +164,11 @@ export default function Login() {
 
   return (
     <Wrapper>
+      <SuccessModal
+        message="마음으로 통하는 하늘의 입구,"
+        subMessage="MINDTRIP에 오신 걸 환영합니다!"
+        show={showSuccessModal}
+      />
       <Container>
         <Title src={logo1} alt="logo" />
         <Input
