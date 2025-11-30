@@ -402,10 +402,10 @@ const DeleteModalButton = styled.button`
 
 // 추천 컨텐츠 스타일 (RecommendationModal과 동일)
 const RecommendationItem = styled.div`
-  background: #e9e7e7;
+  background: #fffcf8;
   padding: 16px;
   border-radius: 12px;
-  margin-top: 12px;
+
 `;
 
 const ItemTitle = styled.div`

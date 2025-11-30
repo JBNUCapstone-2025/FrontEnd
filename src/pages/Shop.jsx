@@ -5,6 +5,19 @@ import colors from "../styles/colors";
 import { FaAngleLeft } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 
+// 이미지 import
+import enterkey from "../img/shop/enterkey.png";
+import eye from "../img/shop/eye.png";
+import oil from "../img/shop/oil.png";
+import stressball from "../img/shop/stressball.png";
+import candle from "../img/shop/candle.png";
+import coloringbook from "../img/shop/coloringbook.png";
+import cotton from "../img/shop/cotton.png";
+import slime from "../img/shop/slime.png";
+import sandback from "../img/shop/sandback.png";
+
+
+
 const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
@@ -118,7 +131,15 @@ const ProductImageWrapper = styled.div`
   padding-top: 130%; /* 3:4 비율 이미지 박스 */
 `;
 
-const ProductImage = styled.div`
+const ProductImage = styled.img`
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+`;
+
+const PlaceholderText = styled.div`
   position: absolute;
   inset: 0;
   display: flex;
@@ -147,8 +168,8 @@ const ProductBrand = styled.div`
 
 const ProductName = styled.div`
   margin-top: 3px;
-  font-size: 13px;
-  color: ${colors.text};
+  font-size: 15px;
+  color: ${colors.airplanebody};
   line-height: 1.3;
 `;
 
@@ -162,7 +183,7 @@ const PriceRow = styled.div`
 const SalePrice = styled.span`
   font-size: 14px;
   font-weight: 700;
-  color: ${colors.text};
+  color: ${colors.airplanebody};
 `;
 
 const OriginalPrice = styled.span`
@@ -179,183 +200,87 @@ const DiscountRate = styled.span`
 
 // 감정 기반 더미 상품 데이터
 const PRODUCTS = [
-  // 기쁨
-  {
-    id: 1,
-    category: "기쁨",
-    brand: "무신사 스탠다드",
-    name: "비비드 컬러 후드 티셔츠",
-    price: 39000,
-    salePrice: 29000,
-    badge: "HAPPY"
-  },
-  {
-    id: 2,
-    category: "기쁨",
-    brand: "NERDY",
-    name: "파스텔 조거 트레이닝 팬츠",
-    price: 59000,
-    salePrice: 45900,
-    badge: "NEW"
-  },
-  {
-    id: 3,
-    category: "기쁨",
-    brand: "LINE FRIENDS",
-    name: "스마일 그래픽 양말 3팩",
-    price: 19000,
-    salePrice: 15000,
-    badge: "단독"
-  },
-
   // 슬픔
   {
     id: 4,
     category: "슬픔",
-    brand: "THERMOS",
-    name: "따뜻한 차를 위한 텀블러",
-    price: 29000,
-    salePrice: 24900,
-    badge: "위로템"
+    brand: "써니데이마켓",
+    name: "옥상정원 꽃 컬러링북",
+    price: 13500,
+    image: coloringbook
   },
   {
     id: 5,
     category: "슬픔",
     brand: "MUJI",
     name: "부드러운 코튼 이불 담요",
-    price: 59000,
-    salePrice: 52000,
-    badge: "SOFT"
-  },
-  {
-    id: 6,
-    category: "슬픔",
-    brand: "BOOKSHOP",
-    name: "마음이 힘들 때 읽는 에세이",
-    price: 15000,
-    salePrice: 13500,
-    badge: "BEST"
+    price: 24000,
+    image: cotton
   },
 
   // 분노
   {
     id: 7,
     category: "분노",
-    brand: "HOME GYM",
-    name: "스트레스 펀칭 미니 샌드백",
-    price: 39000,
-    salePrice: 32000,
-    badge: "스트레스 해소"
+    brand: "알럽하우스",
+    name: "분노의 엔터키 쿠션",
+    price: 13900,
+    image: enterkey
   },
   {
     id: 8,
     category: "분노",
-    brand: "DESK TOY",
-    name: "고무 스트레스 볼 3종 세트",
-    price: 19000,
-    salePrice: 15900,
-    badge: "인기"
+    brand: "현미온미",
+    name: "현미온미 눈 찜질팩",
+    price: 19800,
+    image: eye
   },
   {
     id: 9,
     category: "분노",
-    brand: "AROMA LAB",
-    name: "머스크 우디 디퓨저",
-    price: 27000,
-    salePrice: 23900,
-    badge: "CALM"
+    brand: "스타배송",
+    name: "팔레트슬라임 5종 랜덤박스/안전한 수제 액체괴물",
+    price: 31500,
+    image: slime
+  },
+  {
+    id: 13,
+    category: "분노",
+    brand: "에베라스트",
+    name: "인플레이터블 밥 백(120cm)/공기주입 샌드백",
+    price: 19800,
+    image: sandback
   },
 
   // 불안
   {
     id: 10,
     category: "불안",
-    brand: "WEIGHTBLANKET",
-    name: "무거운 안심 담요 7kg",
-    price: 99000,
-    salePrice: 89000,
-    badge: "안정감"
+    brand: "아로니카",
+    name: "모던 소이캔들 캔들워머 세트",
+    price: 19600,
+    image: oil
   },
   {
     id: 11,
     category: "불안",
-    brand: "AROMA LAB",
-    name: "라벤더 수면 스프레이",
-    price: 23000,
-    salePrice: 21000,
-    badge: "SLEEP"
+    brand: "아이데이지",
+    name: "고무 스트레스볼",
+    price: 5900,
+    image: stressball
   },
   {
     id: 12,
     category: "불안",
-    brand: "MUJI",
-    name: "저소음 무드 조명 스탠드",
-    price: 49000,
-    salePrice: 45000,
-    badge: "감성"
-  },
-
-  // 설렘
-  {
-    id: 13,
-    category: "설렘",
-    brand: "COS",
-    name: "심플 블랙 원피스",
-    price: 89000,
-    salePrice: 79000,
-    badge: "DATE"
-  },
-  {
-    id: 14,
-    category: "설렘",
-    brand: "JO MALONE",
-    name: "플로럴 퍼퓸 30ml",
-    price: 99000,
-    salePrice: 92000,
-    badge: "향기"
-  },
-  {
-    id: 15,
-    category: "설렘",
-    brand: "ACCESSORY LAB",
-    name: "미니 하트 실버 목걸이",
-    price: 39000,
-    salePrice: 35000,
-    badge: "인기"
-  },
-
-  // 보통
-  {
-    id: 16,
-    category: "보통",
-    brand: "UNIQLO",
-    name: "울트라 스트레치 조거 팬츠",
-    price: 39000,
-    salePrice: 32000,
-    badge: "홈웨어"
-  },
-  {
-    id: 17,
-    category: "보통",
-    brand: "STARBUCKS",
-    name: "하루 한 잔 원두 세트",
-    price: 19000,
-    salePrice: 17500,
-    badge: "에너지"
-  },
-  {
-    id: 18,
-    category: "보통",
-    brand: "무신사 스탠다드",
-    name: "폭신 폭신 오버핏 후드 집업",
-    price: 49000,
-    salePrice: 43000,
-    badge: "따뜻"
+    brand: "리베르",
+    name: "비건 에센셜 아로마 오일롤온 & 괄사 세트",
+    price: 38000,
+    image: candle
   }
 ];
 
 // 감정 카테고리
-const CATEGORIES = ["전체", "기쁨", "설렘",  "보통", "슬픔", "불안", "분노"];
+const CATEGORIES = ["전체", "슬픔", "불안", "분노"];
 
 const formatPrice = (price) => {
   if (!price && price !== 0) return "";
@@ -380,7 +305,7 @@ const Shop = () => {
     <Wrapper>
       <TopBar>
         <BackButton onClick={() => navigate("/main")} />
-        <Title>쇼핑</Title>
+        <Title>상점</Title>
         <Placeholder />
       </TopBar>
 
@@ -399,7 +324,7 @@ const Shop = () => {
 
         <ProductGrid>
           {filteredProducts.map((product) => {
-            const { id, brand, name, price, salePrice, badge } = product;
+            const { id, brand, name, price, salePrice, badge, image } = product;
             const discount =
               salePrice && price
                 ? Math.round((1 - salePrice / price) * 100)
@@ -408,7 +333,11 @@ const Shop = () => {
             return (
               <ProductCard key={id} onClick={() => handleCardClick(product)}>
                 <ProductImageWrapper>
-                  <ProductImage>LOOKBOOK</ProductImage>
+                  {image ? (
+                    <ProductImage src={image} alt={name} />
+                  ) : (
+                    <PlaceholderText>LOOKBOOK</PlaceholderText>
+                  )}
                   {badge && <Badge>{badge}</Badge>}
                 </ProductImageWrapper>
 
